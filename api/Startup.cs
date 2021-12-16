@@ -31,8 +31,10 @@ namespace api
 		{
 			services.AddDbContext<MeuDbContext>(Options =>
 			{
-				Options.UseNpgsql("Host=localhost;Username=postgres;Password=local123;Database=estudos");
+				Options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
 			});
+
+			services.AddIdentityConfiguration(Configuration);
 			services.AddAutoMapper(typeof(Startup));
             services.WebApiConfig();
 			services.ResolveDependencies();
@@ -50,7 +52,9 @@ namespace api
 				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 				app.UseHsts();
 			}
-
+            
+			//UseAuthentication precisa estar antes do MVC
+			app.UseAuthentication();
             app.UseMvConfiuration();
            
 		}

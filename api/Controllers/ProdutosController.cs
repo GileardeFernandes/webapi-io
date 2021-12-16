@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using api.Dtos;
+using api.Extension;
 using AutoMapper;
 using DevIO.Business.Intefaces;
 using DevIO.Business.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
-
+    [Authorize]
     [Route("api/produtos")]
 	public class ProdutosController : MainController
 	{
@@ -44,7 +46,8 @@ namespace api.Controllers
 
 			return produtoDto; 
 		}
-
+        
+		[ClaimsAuthorize("Produtos","Remover")]
 		[HttpDelete("{id:guid}")]
         public async Task<ActionResult<ProdutoDto>> Excluir(Guid id) {
 
@@ -56,7 +59,8 @@ namespace api.Controllers
 
 			return CustomResponse(produtoDto);
 		}
-
+       
+	    [ClaimsAuthorize("Produtos","Adicionar")]
 		[HttpPost]
 		public async Task<ActionResult<ProdutoDto>> Adicionar(ProdutoDto produtoDto){
            
@@ -76,7 +80,8 @@ namespace api.Controllers
 
 
 		}
-
+        
+		[ClaimsAuthorize("Produtos","Adicionar")]
 		[HttpPost("Adicionar")]
 		public async Task<ActionResult<ProdutoDto>> AdicionarAlternativo(ProdutoImagemDto produtoDto){
            
@@ -106,6 +111,7 @@ namespace api.Controllers
 		//        return Ok(file);
 		// }
 
+        [ClaimsAuthorize("Produtos","Atualizar")]
 		[HttpPut("{id:guid}")]
 		public async Task<ActionResult> Atualizar(Guid id, ProdutoDto produtoDto){
 

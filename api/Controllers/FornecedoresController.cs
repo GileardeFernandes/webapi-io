@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dtos;
+using api.Extension;
 using AutoMapper;
 using DevIO.Business.Intefaces;
 using DevIO.Business.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
+	[Authorize]
 	[Route("api/fornecedores")]
 	public class FornecedoresController : MainController
 	{
@@ -29,6 +32,8 @@ namespace api.Controllers
 			_fornecedorService = fornecedorService;
 			_enderecoRepository = enderecoRepository;
 		}
+
+
 		[HttpGet]
 		public async Task<IEnumerable<FornecedorDto>> ObterTodos()
 		{
@@ -53,7 +58,7 @@ namespace api.Controllers
 			return _mapper.Map<EnderecoDto>(await _enderecoRepository.ObterPorId(id));
 		}
 
-
+        [ClaimsAuthorize("Fornecedores","Atualizar")]
 		[HttpPut("atualizar-endereco/{id:guid}")]
 		public async Task<ActionResult<EnderecoDto>> AtualizarEndereco(Guid id, EnderecoDto enderecoDto)
 		{
@@ -72,7 +77,8 @@ namespace api.Controllers
 			return CustomResponse(enderecoDto);
 
 		}
-
+        
+		[ClaimsAuthorize("Fornecedores","Adicionar")]
 		[HttpPost]
 		public async Task<ActionResult<FornecedorDto>> Adcionar(FornecedorDto fornecedorDto)
 		{
@@ -84,7 +90,7 @@ namespace api.Controllers
 			return CustomResponse(fornecedorDto);
 		}
 
-
+        [ClaimsAuthorize("Fornecedores","Atualizar")]
 		[HttpPut("{id:guid}")]
 		public async Task<ActionResult<FornecedorDto>> Atualizar(Guid id, FornecedorDto fornecedorDto)
 		{
@@ -98,6 +104,7 @@ namespace api.Controllers
 			return CustomResponse(fornecedorDto);
 		}
 
+        [ClaimsAuthorize("Fornecedores","Remover")]
 		[HttpDelete("{id:guid}")]
 		public async Task<ActionResult<FornecedorDto>> Excluir(Guid id)
 		{

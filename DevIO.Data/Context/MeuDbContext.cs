@@ -5,16 +5,18 @@ using System.Threading.Tasks;
 using DevIO.Business.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace DevIO.Data.Context
 {
     public class MeuDbContext : DbContext 
     {
-		public MeuDbContext(DbContextOptions options) : base(options) { }
+		public MeuDbContext(DbContextOptions<MeuDbContext> options) : base(options) { }
 
+        // public IConfiguration Configuration { get; }
 		// protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		// {
-		// 	optionsBuilder.UseNpgsql("Host=localhost;Username=postgres;Password=local123;Database=estudos");
+		// 	optionsBuilder.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
 		// }
 
         public DbSet<Produto> Produtos { get; set; }
