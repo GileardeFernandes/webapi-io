@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 
 namespace api.Configuration
 {
@@ -10,6 +11,20 @@ namespace api.Configuration
 		{
 
 			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddApiVersioning(options => {
+
+				options.AssumeDefaultVersionWhenUnspecified = true;
+				options.DefaultApiVersion = new ApiVersion(1,0);
+				options.ReportApiVersions = true;
+			});
+
+			services.AddVersionedApiExplorer(options =>{
+
+				options.GroupNameFormat = "'v'VVV";
+				options.SubstituteApiVersionInUrl = true;
+			});
+
 			services.Configure<ApiBehaviorOptions>(options =>
 			{
 				options.SuppressModelStateInvalidFilter = true;
@@ -22,6 +37,18 @@ namespace api.Configuration
 								 .AllowAnyMethod()
 								 .AllowAnyHeader()
 								 .AllowCredentials());
+
+				// options.AddDefaultPolicy(builder => builder.AllowAnyOrigin()
+				// 											.AllowAnyMethod()
+				// 											.AllowAnyHeader()
+				// 											.AllowCredentials());
+
+				options.AddPolicy("Producion",
+						builder => builder.WithMethods("GET")
+										.WithOrigins("http://meudm.com")
+										.SetIsOriginAllowedToAllowWildcardSubdomains()
+										//.WithHeaders(HeaderNames.ContentType, "x-custom-header")
+										.AllowAnyHeader());
 			});
 
 			return services;
@@ -31,7 +58,6 @@ namespace api.Configuration
 		public static IApplicationBuilder UseMvConfiuration(this IApplicationBuilder app)
 		{
 
-			app.UseCors("Development");
 			app.UseHttpsRedirection();
 			app.UseMvc();
 			return app;

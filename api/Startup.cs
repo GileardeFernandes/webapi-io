@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 using api.Configuration;
+using Api.Configuration;
 using AutoMapper;
 using DevIO.Data.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+
 
 namespace api
 {
@@ -37,25 +33,30 @@ namespace api
 			services.AddIdentityConfiguration(Configuration);
 			services.AddAutoMapper(typeof(Startup));
             services.WebApiConfig();
+            services.AddSwaggerConfig();
 			services.ResolveDependencies();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApiVersionDescriptionProvider provider)
 		{
 			if (env.IsDevelopment())
 			{
+				app.UseCors("Development");
 				app.UseDeveloperExceptionPage();
 			}
 			else
 			{
-				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+				app.UseCors("Producion");
+				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts
 				app.UseHsts();
 			}
             
 			//UseAuthentication precisa estar antes do MVC
 			app.UseAuthentication();
             app.UseMvConfiuration();
+
+			app.UseSwaggerConfig(provider);
            
 		}
 	}

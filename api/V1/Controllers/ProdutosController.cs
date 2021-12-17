@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using api.Controllers;
 using api.Dtos;
 using api.Extension;
 using AutoMapper;
@@ -11,10 +12,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace api.Controllers
+namespace api.V1.Controllers
 {
     [Authorize]
-    [Route("api/produtos")]
+	[ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/produtos")]
 	public class ProdutosController : MainController
 	{
 		private readonly IProdutoRepository _produtoRepository;
@@ -23,7 +25,8 @@ namespace api.Controllers
 		public ProdutosController(INotificador notificador,
 		                          IProdutoRepository produtoRepository,
 								 IProdutoService produtoService,
-								 IMapper mapper ) : base(notificador)
+								 IMapper mapper,
+								 IUser user ) : base(notificador, user)
 		{
 			_produtoRepository = produtoRepository;
 			_produtoService = produtoService;

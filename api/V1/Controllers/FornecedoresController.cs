@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Controllers;
 using api.Dtos;
 using api.Extension;
 using AutoMapper;
@@ -10,10 +11,11 @@ using DevIO.Business.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace api.Controllers
+namespace api.V1.Controllers
 {
 	[Authorize]
-	[Route("api/fornecedores")]
+	[ApiVersion("1.0")]
+	[Route("api/v{version:apiVersion}/fornecedores")]
 	public class FornecedoresController : MainController
 	{
 		private readonly IFornecedorRepository _fornecedorRepository;
@@ -25,7 +27,8 @@ namespace api.Controllers
 									  IMapper mapper,
 									  IFornecedorService fornecedorService,
 									  INotificador notificador,
-									  IEnderecoRepository enderecoRepository) : base(notificador)
+									  IEnderecoRepository enderecoRepository,
+									  IUser user) : base(notificador, user)
 		{
 			_fornecedorRepository = fornecedorRepository;
 			_mapper = mapper;
@@ -94,7 +97,7 @@ namespace api.Controllers
 		[HttpPut("{id:guid}")]
 		public async Task<ActionResult<FornecedorDto>> Atualizar(Guid id, FornecedorDto fornecedorDto)
 		{
-
+            
 			if (id != fornecedorDto.Id) return BadRequest();
 
 			if (!ModelState.IsValid) return CustomResponse(ModelState);
