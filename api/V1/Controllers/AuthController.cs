@@ -8,8 +8,10 @@ using api.Controllers;
 using api.Dtos;
 using api.Extension;
 using DevIO.Business.Intefaces;
+using Elmah.Io.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -22,15 +24,18 @@ namespace api.V1.Controllers
 		private readonly SignInManager<IdentityUser> _signInManager;
 		private readonly UserManager<IdentityUser> _userManager;
 		private readonly AppSettings _appSettings;
+		private readonly ILogger _logger;
 		public AuthController(INotificador notificador,
 							  SignInManager<IdentityUser> signInManager,
 							  UserManager<IdentityUser> userManager,
 							  IOptions<AppSettings> appSettings,
-							  IUser user) : base(notificador, user)
+							  IUser user,
+							  ILogger<AuthController> logger) : base(notificador, user)
 		{
 			_signInManager = signInManager;
 			_userManager = userManager;
 			_appSettings = appSettings.Value;
+			_logger = logger;
 		}
 
 		[HttpPost("nova-conta")]
@@ -71,9 +76,19 @@ namespace api.V1.Controllers
 
 			var result = await _signInManager.PasswordSignInAsync(loginUser.Email, loginUser.Password, false, true);
 
+			// try
+			// {
+			// 	 var i = 0;
+			// 	 var resultado = 42/ i;
+			// }
+			// catch(DivideByZeroException e)
+			// {
+            //     e.Ship(HttpContext); eniando um tratamento para o elmah
+			// }
+
 			if (result.Succeeded)
 			{
-
+                 _logger.LogInformation("usuáro "+loginUser.Email +" logaod com sucesso.");
 				return CustomResponse(await GerarJwt(loginUser.Email));
 			}
 

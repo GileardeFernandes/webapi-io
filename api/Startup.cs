@@ -1,9 +1,12 @@
 ﻿
 using api.Configuration;
+using api.Extension;
 using Api.Configuration;
 using AutoMapper;
 using DevIO.Data.Context;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +37,13 @@ namespace api
 			services.AddAutoMapper(typeof(Startup));
             services.WebApiConfig();
             services.AddSwaggerConfig();
+			services.AddLoggingConfiguration();
+			//AddNgSQL verifica se esta tudo funcionando com o banco informado no parametro
+			services.AddHealthChecks()
+			        .AddNpgSql(Configuration.GetConnectionString("DefaultConnection"), name:"Banco postgres")
+					.AddCheck("Produtos", new SqlPostgresHealthCheck(Configuration.GetConnectionString("DefaultConnection")));
+					
+			services.AddHealthChecksUI();
 			services.ResolveDependencies();
 		}
 
@@ -54,9 +64,22 @@ namespace api
             
 			//UseAuthentication precisa estar antes do MVC
 			app.UseAuthentication();
+			app.UseMiddleware<ExceptionMiddleware>();
             app.UseMvConfiuration();
 
 			app.UseSwaggerConfig(provider);
+			app.UseLoggingConfiguration();
+
+			app.UseHealthChecks("/api/hc", new HealthCheckOptions(){
+
+				Predicate = _ => true,
+				ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+			});
+
+			app.UseHealthChecksUI(options =>{
+
+				options.UIPath = "/api/hc-ui";
+			});
            
 		}
 	}
