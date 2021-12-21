@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Elmah.Io.AspNetCore;
+//using Elmah.Io.AspNetCore;
 using Microsoft.AspNetCore.Http;
 
 namespace api.Extension
@@ -25,13 +26,13 @@ namespace api.Extension
 			catch (Exception ex)
 			{
 				
-				 HandleExceptionAsync(hpptContext, ex);
+				 await HandleExceptionAsync(hpptContext, ex);
 			}
 		}
 
-		public static void HandleExceptionAsync(HttpContext httpContext, Exception exeption){
+		public static async Task HandleExceptionAsync(HttpContext httpContext, Exception exeption){
              
-             exeption.Ship(httpContext);
+             await  exeption.ShipAsync(httpContext);
 			 httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 		}
 	}

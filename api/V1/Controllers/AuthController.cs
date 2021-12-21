@@ -75,7 +75,8 @@ namespace api.V1.Controllers
 			if (!ModelState.IsValid) return CustomResponse(ModelState);
 
 			var result = await _signInManager.PasswordSignInAsync(loginUser.Email, loginUser.Password, false, true);
-
+             
+		
 			// try
 			// {
 			// 	 var i = 0;
@@ -83,12 +84,12 @@ namespace api.V1.Controllers
 			// }
 			// catch(DivideByZeroException e)
 			// {
-            //     e.Ship(HttpContext); eniando um tratamento para o elmah
+            //     e.Ship(HttpContext); //enviando um tratamento para o elmah
 			// }
 
 			if (result.Succeeded)
 			{
-                 _logger.LogInformation("usuáro "+loginUser.Email +" logaod com sucesso.");
+                 _logger.LogWarning("usuáro "+loginUser.Email +" logado com sucesso !!");
 				return CustomResponse(await GerarJwt(loginUser.Email));
 			}
 

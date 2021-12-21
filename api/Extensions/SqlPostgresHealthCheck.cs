@@ -30,7 +30,8 @@ namespace api.Extension
 					while (await result.ReadAsync())
 						total++;
 
-					return total > 0 ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy();
+					return total < 0 ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy();
+					
 				}
 			}
 			catch (Exception)
